@@ -1,62 +1,64 @@
 FROM php:8.3-apache
 
-# Define o diretório de trabalho
-WORKDIR /var/www/html
+# Argumentos de build
+ARG user=laravel
+ARG uid=1000
 
-# Instala as dependências do sistema
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
     zip \
     unzip \
-    nodejs \
-    npm \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    nano \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configura e instala extensões do PHP necessárias para o Laravel
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install -j$(nproc) \
-    pdo_mysql \
-    mbstring \
+# Instalar extensões PHP necessárias para Laravel
+RUN docker-php-ext-install \ 
+    pdo_mysql \ 
+    mbstring \ 
     exif \
     pcntl \
     bcmath \
     gd \
-    zip
+    zip \
+    opcache
 
-# Instala o Composer
+# Habilitar mod_rewrite do Apache
+RUN a2enmod rewrite headers
+
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Habilita o mod_rewrite do Apache
-RUN a2enmod rewrite
+# Criar usuário do sistema para rodar comandos do Composer e Artisan
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
 
-# Configura o Apache para apontar para o diretório public do Laravel
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Configurar diretório de trabalho
+WORKDIR /var/www/html
 
-# Configura as permissões de desenvolvimento
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN usermod -u ${USER_ID} www-data && \
-    groupmod -g ${GROUP_ID} www-data
+# Copiar configuração customizada do Apache
+COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-# Abre a porta 80
+# Copiar configuração customizada do PHP
+COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Ajustar permissões
+RUN chown -R $user:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+# Expor porta 80
 EXPOSE 80
 
-# Executa um script inline para configurar as permissões e iniciar o Apache
-CMD bash -c " \
-    sleep 2 && \
-    chown -R www-data:www-data /var/www/html && \
-    find /var/www/html -type f -exec chmod 644 {} \; && \
-    find /var/www/html -type d -exec chmod 755 {} \; && \
-    [ -d '/var/www/html/storage' ] && chmod -R 775 /var/www/html/storage && chown -R www-data:www-data /var/www/html/storage; \
-    [ -d '/var/www/html/bootstrap/cache' ] && chmod -R 775 /var/www/html/bootstrap/cache && chown -R www-data:www-data /var/www/html/bootstrap/cache; \
-    exec apache2-foreground \
-"
+# Script de entrada
+COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["apache2-foreground"]
