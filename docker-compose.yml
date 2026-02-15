@@ -66,24 +66,10 @@ services:
     depends_on:
       - db
 
-  # Redis (opcional, mas recomendado para cache/sessões)
-  redis:
-    image: redis:alpine
-    container_name: laravel-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - laravel-network
-    volumes:
-      - redis-data:/data
-
 networks:
   laravel-network:
     driver: bridge
 
 volumes:
   mysql-data:
-    driver: local
-  redis-data:
     driver: local
