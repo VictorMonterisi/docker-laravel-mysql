@@ -94,9 +94,6 @@ seu-projeto/
 **Adicionar Redis:**
 Descomente o serviço `redis` no `docker-compose.yml`
 
-**Alterar portas:**
-Modifique a seção `ports` no `docker-compose.yml`
-
 **Ajustar permissões:**
 ```bash
 docker-compose exec app chown -R laravel:www-data /var/www/html
@@ -194,9 +191,6 @@ your-project/
 
 **Add Redis:**
 Uncomment the `redis` service in `docker-compose.yml`
-
-**Change ports:**
-Modify the `ports` section in `docker-compose.yml`
 
 **Fix permissions:**
 ```bash
