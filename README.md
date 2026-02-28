@@ -1,10 +1,10 @@
 # Docker Laravel 11 Mysql
 
-[English](#english-version) | [Português](#versão-em-português)
+[English 🇺🇸](#english-version) | [Português 🇧🇷](#versão-em-português)
 
 ---
 
-## Versão em Português
+## Versão em Português 🇧🇷
 
 ### Componentes
 
@@ -91,7 +91,7 @@ meu-projeto-laravel/
 
 ---
 
-## English Version
+## English Version 🇺🇸
 
 ### Components
 
