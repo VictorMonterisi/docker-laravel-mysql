@@ -1,0 +1,17 @@
+# Docker
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+docker/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docs
+README.md
+*.md
+phpunit.xml
+.editorconfig
+.phpunit.result.cache

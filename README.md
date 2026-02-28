@@ -8,7 +8,7 @@
 
 ### Componentes
 
-- **PHP 8.3** com Apache
+- **PHP 8.4** com Apache
 - **Laravel 11**
 - **MySQL 8.0**
 - **phpMyAdmin**
@@ -24,33 +24,33 @@ docker-compose up -d --build
 
 3. **Instale o Laravel** (se for projeto novo)
 ```bash
-docker-compose exec app composer create-project laravel/laravel .
-docker-compose exec app cp .env.example .env
-docker-compose exec app php artisan key:generate
+docker-compose exec laravel_app composer create-project laravel/laravel:^11 .
+docker-compose exec laravel_app cp .env.example .env
+docker-compose exec laravel_app php artisan key:generate
 ```
 
 4. **Configure o banco de dados no .env do Laravel**
 ```env
+APP_KEY=<chave_gerada>
+
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=laravel
-DB_PASSWORD=secret
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel_db_admin
+DB_PASSWORD=<senha_forte>
+DB_ROOT_PASSWORD=<senha_forte_para_o_root>
 ```
 
 5. **Execute as migrations**
 ```bash
-docker-compose exec app php artisan migrate
+docker-compose exec laravel_app php artisan migrate
 ```
 
 ### Acessar Aplicações
 
 - **Laravel**: http://localhost:8000
 - **phpMyAdmin**: http://localhost:8080
-  - Servidor: `db`
-  - Usuário: `laravel`
-  - Senha: `secret`
 
 ### Comandos Úteis
 
@@ -59,45 +59,34 @@ docker-compose exec app php artisan migrate
 docker-compose down
 
 # Ver logs
-docker-compose logs -f app
+docker-compose logs -f laravel_app
 
 # Acessar bash do container
-docker-compose exec app bash
+docker-compose exec laravel_app bash
 
 # Executar comandos Artisan
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan cache:clear
+docker-compose exec laravel_app php artisan migrate
+docker-compose exec laravel_app php artisan cache:clear
 
 # Instalar dependências
-docker-compose exec app composer install
+docker-compose exec laravel_app composer install
 ```
 
 ### Estrutura de Arquivos
 
 ```
-seu-projeto/
-├── docker/
-│   ├── apache/
-│   │   └── 000-default.conf
-│   ├── php/
-│   │   └── custom.ini
-│   ├── mysql/
-│   │   └── my.cnf
-│   └── entrypoint.sh
+meu-projeto-laravel/
 ├── Dockerfile
 ├── docker-compose.yml
-└── .dockerignore
-```
-
-### Personalizações Opcionais
-
-**Adicionar Redis:**
-Descomente o serviço `redis` no `docker-compose.yml`
-
-**Ajustar permissões:**
-```bash
-docker-compose exec app chown -R laravel:www-data /var/www/html
-docker-compose exec app chmod -R 775 storage bootstrap/cache
+├── .dockerignore
+├── .env
+├── .env.example
+├── LICENSE
+├── README.md
+├── docker/
+│   └── apache/
+│       └── laravel.conf   ← configuração do VirtualHost
+└── (arquivos Laravel)
 ```
 
 ---
@@ -106,7 +95,7 @@ docker-compose exec app chmod -R 775 storage bootstrap/cache
 
 ### Components
 
-- **PHP 8.3** with Apache
+- **PHP 8.4** with Apache
 - **Laravel 11**
 - **MySQL 8.0**
 - **phpMyAdmin**
@@ -122,33 +111,33 @@ docker-compose up -d --build
 
 3. **Install Laravel** (for new projects)
 ```bash
-docker-compose exec app composer create-project laravel/laravel .
-docker-compose exec app cp .env.example .env
-docker-compose exec app php artisan key:generate
+docker-compose exec laravel_app composer create-project laravel/laravel:^11 .
+docker-compose exec laravel_app cp .env.example .env
+docker-compose exec laravel_app php artisan key:generate
 ```
 
 4. **Configure database in Laravel's .env**
 ```env
+APP_KEY=<generated_key>
+
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=laravel
-DB_PASSWORD=secret
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel_db_admin
+DB_PASSWORD=<strong_password>
+DB_ROOT_PASSWORD=<strong_password_for_root>
 ```
 
 5. **Run migrations**
 ```bash
-docker-compose exec app php artisan migrate
+docker-compose exec laravel_app php artisan migrate
 ```
 
 ### Access Applications
 
 - **Laravel**: http://localhost:8000
 - **phpMyAdmin**: http://localhost:8080
-  - Server: `db`
-  - Username: `laravel`
-  - Password: `secret`
 
 ### Useful Commands
 
@@ -157,43 +146,33 @@ docker-compose exec app php artisan migrate
 docker-compose down
 
 # View logs
-docker-compose logs -f app
+docker-compose logs -f laravel_app
 
 # Access container bash
-docker-compose exec app bash
+docker-compose exec laravel_app bash
 
 # Run Artisan commands
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan cache:clear
+docker-compose exec laravel_app php artisan migrate
+docker-compose exec laravel_app php artisan cache:clear
 
 # Install dependencies
-docker-compose exec app composer install
+docker-compose exec laravel_app composer install
 ```
 
 ### File Structure
 
 ```
-your-project/
-├── docker/
-│   ├── apache/
-│   │   └── 000-default.conf
-│   ├── php/
-│   │   └── custom.ini
-│   ├── mysql/
-│   │   └── my.cnf
-│   └── entrypoint.sh
+my-laravel-project/
 ├── Dockerfile
 ├── docker-compose.yml
-└── .dockerignore
+├── .dockerignore
+├── .env
+├── .env.example
+├── LICENSE
+├── README.md
+├── docker/
+│   └── apache/
+│       └── laravel.conf   ← VirtualHost conf
+└── (Laravel files)
 ```
 
-### Optional Customizations
-
-**Add Redis:**
-Uncomment the `redis` service in `docker-compose.yml`
-
-**Fix permissions:**
-```bash
-docker-compose exec app chown -R laravel:www-data /var/www/html
-docker-compose exec app chmod -R 775 storage bootstrap/cache
-```
